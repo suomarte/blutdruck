@@ -155,6 +155,12 @@ function average(key: keyof Reading): number {
 
 function layout(content: string): string {
   return `
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Blutdruck – Startseite">
+        <img src="icons/icon-180.png" alt="" width="48" height="48" />
+        <span>Blutdruck</span>
+      </a>
+    </header>
     <main id="main-content" tabindex="-1">
       ${step !== "instructions" ? '<div class="page-actions"><button class="button button-quiet" data-action="reset">Neu starten</button></div>' : ""}
       ${content}
