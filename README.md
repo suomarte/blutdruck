@@ -6,7 +6,7 @@ Die reine Frontend-Anwendung führt durch drei Blutdruckmessungen mit einem vorh
 
 Eine erste ausführbare Version ist umgesetzt. Sie läuft vollständig im Browser, verarbeitet Messwerte nur im Arbeitsspeicher und benötigt kein Backend.
 
-Die Anwendung wird nach jedem Push auf `master` automatisch über GitHub Pages veröffentlicht:
+Die Anwendung wird nach jedem Push auf `main` automatisch über GitHub Pages veröffentlicht:
 
 <https://suomarte.github.io/blutdruck/>
 

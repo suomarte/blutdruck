@@ -39,4 +39,4 @@ Die erste Version richtet sich an aktuelle Mobil- und Desktop-Browser. Die Anwen
 - Timer laufen auch nach Tabwechsel oder Gerätesperre anhand des Endzeitpunkts korrekt weiter und wechseln danach automatisch zum nächsten Schritt.
 - Tastaturbedienung, Fokusführung sowie verständliche Status- und Fehlermeldungen einschließlich Screenreader-Ansagen werden geprüft.
 
-Der Produktions-Build wird mit `npm run build` erstellt. Der automatische Deploy ist in `.github/workflows/deploy-pages.yml` definiert und läuft bei Pushes auf `master`.
+Der Produktions-Build wird mit `npm run build` erstellt. Der automatische Deploy ist in `.github/workflows/deploy-pages.yml` definiert und läuft bei Pushes auf `main`.
