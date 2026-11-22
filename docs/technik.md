@@ -2,7 +2,7 @@
 
 ## Stand und Umfang
 
-Die Anwendung ist noch nicht implementiert. Vorgesehen ist eine reine Frontend-Anwendung mit Vite und TypeScript, zunächst ohne zusätzliche UI-Bibliothek oder Backend. Ein vorhandenes Blutdruckmessgerät wird nicht angebunden; Messwerte werden manuell erfasst.
+Die Anwendung ist als reine Frontend-Anwendung mit Vite und TypeScript umgesetzt, ohne zusätzliche UI-Bibliothek oder Backend. Ein vorhandenes Blutdruckmessgerät wird nicht angebunden; Messwerte werden manuell erfasst. Der Produktions-Build wird über GitHub Actions auf GitHub Pages veröffentlicht.
 
 Der geplante Ablauf ist in [ablauf.md](ablauf.md) beschrieben. Der Anwendungscode soll später unter `src/` liegen.
 
@@ -39,4 +39,4 @@ Die erste Version richtet sich an aktuelle Mobil- und Desktop-Browser. Die Anwen
 - Timer laufen auch nach Tabwechsel oder Gerätesperre anhand des Endzeitpunkts korrekt weiter und wechseln danach automatisch zum nächsten Schritt.
 - Tastaturbedienung, Fokusführung sowie verständliche Status- und Fehlermeldungen einschließlich Screenreader-Ansagen werden geprüft.
 
-Konkrete Build- und Testbefehle werden ergänzt, sobald die Werkzeuge eingerichtet sind.
+Der Produktions-Build wird mit `npm run build` erstellt. Der automatische Deploy ist in `.github/workflows/deploy-pages.yml` definiert und läuft bei Pushes auf `master`.

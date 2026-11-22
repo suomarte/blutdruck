@@ -1,10 +1,14 @@
 # Blutdruckmessung
 
-Geplant ist eine reine Frontend-Anwendung, die durch drei Blutdruckmessungen mit einem vorhandenen Oberarm-Blutdruckmessgerät führt. Die Messwerte werden manuell eingegeben. Die Anwendung stellt keine Diagnose und ersetzt keine ärztliche Beratung.
+Die reine Frontend-Anwendung führt durch drei Blutdruckmessungen mit einem vorhandenen Oberarm-Blutdruckmessgerät. Die Messwerte werden manuell eingegeben. Die Anwendung stellt keine Diagnose und ersetzt keine ärztliche Beratung.
 
 ## Status
 
 Eine erste ausführbare Version ist umgesetzt. Sie läuft vollständig im Browser, verarbeitet Messwerte nur im Arbeitsspeicher und benötigt kein Backend.
+
+Die Anwendung wird nach jedem Push auf `master` automatisch über GitHub Pages veröffentlicht:
+
+<https://suomarte.github.io/blutdruck/>
 
 ## Entwicklung
 
@@ -18,6 +22,8 @@ Für einen Produktions-Build:
 ```bash
 npm run build
 ```
+
+Der Produktions-Build liegt anschließend im Verzeichnis `dist/`. Die GitHub-Actions-Konfiguration für den automatischen Pages-Deploy befindet sich unter `.github/workflows/deploy-pages.yml`.
 
 ## Geplanter Ablauf
 
@@ -33,4 +39,4 @@ npm run build
 - [Datenschutz](docs/datenschutz.md)
 - [Hinweise für KI-Assistenten](AGENTS.md)
 
-Das Verzeichnis `src/` ist für den späteren Anwendungscode vorgesehen.
+Der Anwendungscode liegt unter `src/`.
