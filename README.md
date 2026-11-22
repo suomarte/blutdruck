@@ -4,7 +4,7 @@ Geplant ist eine reine Frontend-Anwendung, die durch drei Blutdruckmessungen mit
 
 ## Status
 
-Das Projekt befindet sich in der Planungsphase. Es gibt noch keinen Anwendungscode und keine ausführbare Anwendung.
+Die fachlichen und technischen Grundentscheidungen für die Umsetzung sind geklärt. Das Projekt befindet sich weiterhin in der Planungsphase; es gibt noch keinen Anwendungscode und keine ausführbare Anwendung.
 
 ## Geplanter Ablauf
 

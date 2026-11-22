@@ -16,19 +16,20 @@ Die Anwendung begleitet die Messung mit einem vorhandenen Oberarm-Blutdruckmessg
 - Rücken abstützen, beide Füße auf den Boden stellen und Beine nicht überkreuzen.
 - Den Arm so abstützen, dass sich die Manschette etwa auf Herzhöhe befindet.
 - Während der Messungen nicht sprechen.
-- Nach Ablauf des Timers kann die erste Messung beginnen.
+- Nach Ablauf des Timers wechselt die Anwendung automatisch zur ersten Messung.
 
 ## 3. Messung
 
 - Die Anwendung zeigt an, welche der drei Messungen ansteht, und fordert dazu auf, die Messung am Gerät zu starten.
 - Systolischer und diastolischer Wert werden manuell in mmHg eingegeben.
+- Es werden technisch ganze Zahlen von 0 bis 300 mmHg akzeptiert. Diese Prüfung ist keine medizinische Bewertung.
 - Ein Weiter-Button übernimmt die vollständigen, gültigen Eingaben.
 - Nach der ersten und zweiten Messung folgt die Pause, nach der dritten das Ergebnis.
 
 ## 4. Pause
 
 - Zwischen zwei Messungen startet automatisch ein Timer von einer Minute.
-- Nach Ablauf der Pause kann die nächste Messung beginnen.
+- Nach Ablauf der Pause wechselt die Anwendung automatisch zur nächsten Messung.
 - Die Hinweise zur ruhigen Sitzhaltung gelten weiterhin.
 
 ## 5. Ergebnis
@@ -38,4 +39,4 @@ Die Anwendung begleitet die Messung mit einem vorhandenen Oberarm-Blutdruckmessg
 
 ## Medizinische Grundlage
 
-Die [Hinweise der CDC zur Blutdruckmessung](https://www.cdc.gov/high-blood-pressure/measure/index.html) beschreiben unter anderem die Vorbereitung, Sitzhaltung, Ruhephase und den Abstand zwischen Messungen. Die konkreten Formulierungen und der geplante Ablauf sollten vor Veröffentlichung fachlich geprüft werden. Individuelle ärztliche Anweisungen und die Anleitung des Messgeräts sind zu beachten.
+Die [Hinweise der CDC zur Blutdruckmessung](https://www.cdc.gov/high-blood-pressure/measure/index.html) und weitere vertrauenswürdige medizinische Quellen beschreiben unter anderem die Vorbereitung, Sitzhaltung, Ruhephase und den Abstand zwischen Messungen. Die konkreten Formulierungen und der geplante Ablauf werden vor Veröffentlichung fachlich geprüft. Individuelle ärztliche Anweisungen und die Anleitung des Messgeräts sind zu beachten.
