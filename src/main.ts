@@ -5,6 +5,7 @@ type Reading = { systolic: number; diastolic: number };
 
 const REST_DURATION = 5 * 60;
 const BREAK_DURATION = 60;
+const INSTALL_HINT_STORAGE_KEY = "blutdruck.install-hinweis-ausblenden";
 const app = document.querySelector<HTMLDivElement>("#app");
 
 if (!app) throw new Error("App-Container fehlt.");
@@ -17,6 +18,8 @@ let timerEndsAt: number | null = null;
 let timerId: number | undefined;
 let statusMessage = "";
 let errorMessage = "";
+let shareMessage = "";
+let showInstallHint = window.localStorage.getItem(INSTALL_HINT_STORAGE_KEY) !== "true";
 
 function formatTime(seconds: number): string {
   const minutes = Math.floor(seconds / 60);
@@ -31,6 +34,46 @@ function remainingSeconds(): number {
 
 function announce(message: string): void {
   statusMessage = message;
+  render();
+}
+
+function isStandalone(): boolean {
+  return window.matchMedia("(display-mode: standalone)").matches
+    || (navigator as Navigator & { standalone?: boolean }).standalone === true;
+}
+
+function isAppleMobileDevice(): boolean {
+  return /iPhone|iPad|iPod/.test(navigator.userAgent)
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function supportsShare(): boolean {
+  return typeof (navigator as Navigator & { share?: unknown }).share === "function";
+}
+
+async function shareApp(): Promise<void> {
+  if (!supportsShare()) {
+    shareMessage = "Nutze bitte die Teilen-Funktion deines Browsers und wähle anschließend „Zum Home-Bildschirm“.";
+    render();
+    return;
+  }
+
+  try {
+    await navigator.share({
+      title: "Blutdruckmessung",
+      text: "Blutdruckmessung auf dem Home-Bildschirm einrichten",
+      url: window.location.href,
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") return;
+    shareMessage = "Das Teilen war nicht möglich. Bitte versuche es erneut.";
+    render();
+  }
+}
+
+function hideInstallHint(): void {
+  window.localStorage.setItem(INSTALL_HINT_STORAGE_KEY, "true");
+  showInstallHint = false;
   render();
 }
 
@@ -150,6 +193,14 @@ function renderInstructions(): string {
     <section class="intro">
       <h2>Vorbereitung für die Blutdruckmessung</h2>
       <p>Diese Anwendung begleitet dich bei drei manuellen Messungen mit deinem Oberarm-Blutdruckmessgerät. Die Anwendung stellt keine Diagnose und ersetzt keine ärztliche Beratung.</p>
+      ${showInstallHint && isAppleMobileDevice() && !isStandalone() ? `
+        <div class="install-card">
+          <h3>App auf den Home-Bildschirm legen</h3>
+          <p>Auf dem iPhone: Tippe auf <button class="inline-action" data-action="share" type="button">Teilen</button> und anschließend auf „Zum Home-Bildschirm“.</p>
+          ${shareMessage ? `<p class="install-message" role="status">${shareMessage}</p>` : ""}
+          <button class="button button-quiet dismiss-install-hint" data-action="hide-install-hint" type="button">Nicht mehr anzeigen</button>
+        </div>
+      ` : ""}
       <button class="button button-primary" data-action="rest">Ruhephase vorbereiten</button>
       <div class="notice">
         <h3>Bitte vorher beachten</h3>
@@ -245,6 +296,10 @@ function render(): void {
 }
 
 function bindEvents(): void {
+  document.querySelector<HTMLButtonElement>("[data-action='share']")?.addEventListener("click", () => {
+    void shareApp();
+  });
+  document.querySelector<HTMLButtonElement>("[data-action='hide-install-hint']")?.addEventListener("click", hideInstallHint);
   document.querySelector<HTMLButtonElement>("[data-action='rest']")?.addEventListener("click", beginRest);
   document.querySelector<HTMLButtonElement>("[data-action='skip-waiting']")?.addEventListener("click", skipWaiting);
   document.querySelector<HTMLButtonElement>("[data-action='reset']")?.addEventListener("click", reset);

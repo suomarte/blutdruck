@@ -4,7 +4,11 @@
 
 Die Anwendung ist als reine Frontend-Anwendung mit Vite und TypeScript umgesetzt, ohne zusätzliche UI-Bibliothek oder Backend. Ein vorhandenes Blutdruckmessgerät wird nicht angebunden; Messwerte werden manuell erfasst. Der Produktions-Build wird über GitHub Actions auf GitHub Pages veröffentlicht.
 
-Der geplante Ablauf ist in [ablauf.md](ablauf.md) beschrieben. Der Anwendungscode soll später unter `src/` liegen.
+Der geplante Ablauf ist in [ablauf.md](ablauf.md) beschrieben. Der Anwendungscode liegt unter `src/`.
+
+## Home-Bildschirm und App-Icon
+
+Die Anwendung stellt ein Web-App-Manifest mit `display: standalone` und eigenem App-Icon bereit. Auf iOS Safari erfolgt die Einrichtung manuell über „Teilen“ und „Zum Home-Bildschirm“.
 
 ## Zustände und Zeitmessung
 
