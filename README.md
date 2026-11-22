@@ -10,7 +10,7 @@ Die Anwendung wird nach jedem Push auf `main` automatisch über GitHub Pages ver
 
 <https://suomarte.github.io/blutdruck/>
 
-Auf dem iPhone kann die Anwendung über Safari und „Teilen“ → „Zum Home-Bildschirm“ für den Start ohne Safari-Leiste eingerichtet werden. Safari zeigt anschließend das eigene Blutdruck-Icon an.
+Auf dem iPhone kann die Anwendung über das Teilen-Symbol in der Safari-Browserleiste und anschließend „Zum Home-Bildschirm“ für den Start ohne Safari-Leiste eingerichtet werden. Das Teilen-Menü innerhalb der Anwendung ist dafür nicht geeignet. Safari zeigt anschließend das eigene Blutdruck-Icon an.
 
 ## Entwicklung
 

@@ -8,7 +8,7 @@ Der geplante Ablauf ist in [ablauf.md](ablauf.md) beschrieben. Der Anwendungscod
 
 ## Home-Bildschirm und App-Icon
 
-Die Anwendung stellt ein Web-App-Manifest mit `display: standalone` und eigenem App-Icon bereit. Auf iOS Safari erfolgt die Einrichtung manuell über „Teilen“ und „Zum Home-Bildschirm“.
+Die Anwendung stellt ein Web-App-Manifest mit `display: standalone` und eigenem App-Icon bereit. Auf iOS Safari erfolgt die Einrichtung manuell über das Teilen-Symbol in der Safari-Browserleiste und „Zum Home-Bildschirm“; ein Teilen-Menü der Webanwendung öffnet dafür nicht das passende Safari-Menü.
 
 ## Zustände und Zeitmessung
 
