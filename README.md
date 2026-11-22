@@ -4,7 +4,20 @@ Geplant ist eine reine Frontend-Anwendung, die durch drei Blutdruckmessungen mit
 
 ## Status
 
-Die fachlichen und technischen Grundentscheidungen für die Umsetzung sind geklärt. Das Projekt befindet sich weiterhin in der Planungsphase; es gibt noch keinen Anwendungscode und keine ausführbare Anwendung.
+Eine erste ausführbare Version ist umgesetzt. Sie läuft vollständig im Browser, verarbeitet Messwerte nur im Arbeitsspeicher und benötigt kein Backend.
+
+## Entwicklung
+
+```bash
+npm install
+npm run dev
+```
+
+Für einen Produktions-Build:
+
+```bash
+npm run build
+```
 
 ## Geplanter Ablauf
 
