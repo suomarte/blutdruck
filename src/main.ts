@@ -137,18 +137,11 @@ function average(key: keyof Reading): number {
 
 function layout(content: string): string {
   return `
-    <header class="site-header">
-      <div>
-        <p class="eyebrow">Lokale Anwendung</p>
-        <h1>Blutdruckmessung</h1>
-      </div>
-      ${step !== "instructions" ? '<button class="button button-quiet" data-action="reset">Neu starten</button>' : ""}
-    </header>
     <main id="main-content" tabindex="-1">
+      ${step !== "instructions" ? '<div class="page-actions"><button class="button button-quiet" data-action="reset">Neu starten</button></div>' : ""}
       ${content}
     </main>
     <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">${statusMessage}</div>
-    <footer>Die Werte bleiben nur für diesen Ablauf im Arbeitsspeicher. Es findet keine Übertragung statt.</footer>
   `;
 }
 
