@@ -5,15 +5,27 @@ export type Reading = {
   diastolic: number;
 };
 
+export type FlowConfig = {
+  restDurationSeconds: number;
+  breakDurationSeconds: number;
+  measurementCount: number;
+  resultReadingNumbers: number[];
+};
+
 export type FlowState = {
   step: Step;
   readingNumber: number;
   readings: Array<Reading | null>;
   timerEndsAt: number | null;
+  config: FlowConfig;
 };
 
-export const REST_DURATION = 5 * 60;
-export const BREAK_DURATION = 60;
+export const DEFAULT_CONFIG: FlowConfig = {
+  restDurationSeconds: 5 * 60,
+  breakDurationSeconds: 60,
+  measurementCount: 3,
+  resultReadingNumbers: [2, 3],
+};
 
 export function parseReadingValue(value: string): number | null {
   if (value.trim() === "") return null;
@@ -21,12 +33,16 @@ export function parseReadingValue(value: string): number | null {
   return Number.isInteger(parsed) && parsed >= 0 && parsed <= 300 ? parsed : null;
 }
 
-export function createInitialFlow(): FlowState {
+export function createInitialFlow(config: FlowConfig = DEFAULT_CONFIG): FlowState {
   return {
     step: "instructions",
     readingNumber: 1,
-    readings: [null, null, null],
+    readings: Array.from({ length: config.measurementCount }, () => null),
     timerEndsAt: null,
+    config: {
+      ...config,
+      resultReadingNumbers: [...config.resultReadingNumbers],
+    },
   };
 }
 
@@ -36,7 +52,11 @@ export function remainingSeconds(timerEndsAt: number | null, now: number): numbe
 }
 
 export function startRest(flow: FlowState, now: number): FlowState {
-  return { ...flow, step: "rest", timerEndsAt: now + REST_DURATION * 1000 };
+  return {
+    ...flow,
+    step: "rest",
+    timerEndsAt: now + flow.config.restDurationSeconds * 1000,
+  };
 }
 
 export function finishRest(flow: FlowState): FlowState {
@@ -44,7 +64,11 @@ export function finishRest(flow: FlowState): FlowState {
 }
 
 export function startBreak(flow: FlowState, now: number): FlowState {
-  return { ...flow, step: "break", timerEndsAt: now + BREAK_DURATION * 1000 };
+  return {
+    ...flow,
+    step: "break",
+    timerEndsAt: now + flow.config.breakDurationSeconds * 1000,
+  };
 }
 
 export function finishBreak(flow: FlowState): FlowState {
@@ -55,7 +79,7 @@ export function acceptMeasurement(flow: FlowState, reading: Reading): FlowState 
   const readings = [...flow.readings];
   readings[flow.readingNumber - 1] = reading;
 
-  if (flow.readingNumber < 3) {
+  if (flow.readingNumber < flow.config.measurementCount) {
     return {
       ...flow,
       readings,
@@ -69,7 +93,8 @@ export function acceptMeasurement(flow: FlowState, reading: Reading): FlowState 
 }
 
 export function average(flow: FlowState, key: keyof Reading): number {
-  const second = flow.readings[1]?.[key] ?? 0;
-  const third = flow.readings[2]?.[key] ?? 0;
-  return Math.round((second + third) / 2);
+  const values = flow.config.resultReadingNumbers
+    .map((readingNumber) => flow.readings[readingNumber - 1]?.[key])
+    .filter((value): value is number => value !== undefined);
+  return values.length === 0 ? 0 : Math.round(values.reduce((sum, value) => sum + value, 0) / values.length);
 }

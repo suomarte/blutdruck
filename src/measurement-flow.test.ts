@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  BREAK_DURATION,
-  REST_DURATION,
+  DEFAULT_CONFIG,
   acceptMeasurement,
   average,
   createInitialFlow,
@@ -17,9 +16,9 @@ describe("measurement flow", () => {
   it("calculates timer values from the end timestamp", () => {
     const now = 1_000_000;
     const rest = startRest(createInitialFlow(), now);
-    expect(rest.timerEndsAt).toBe(now + REST_DURATION * 1000);
+    expect(rest.timerEndsAt).toBe(now + DEFAULT_CONFIG.restDurationSeconds * 1000);
     expect(remainingSeconds(rest.timerEndsAt, now + 1_500)).toBe(299);
-    expect(remainingSeconds(rest.timerEndsAt, now + REST_DURATION * 1000)).toBe(0);
+    expect(remainingSeconds(rest.timerEndsAt, now + DEFAULT_CONFIG.restDurationSeconds * 1000)).toBe(0);
   });
 
   it("moves from rest to the first measurement", () => {
@@ -37,7 +36,7 @@ describe("measurement flow", () => {
     const paused = startBreak(first, 10_000);
     expect(paused.step).toBe("break");
     expect(paused.readingNumber).toBe(2);
-    expect(paused.timerEndsAt).toBe(10_000 + BREAK_DURATION * 1000);
+    expect(paused.timerEndsAt).toBe(10_000 + DEFAULT_CONFIG.breakDurationSeconds * 1000);
 
     const second = acceptMeasurement(finishBreak(paused), { systolic: 130, diastolic: 85 });
     expect(second.step).toBe("break");
@@ -53,6 +52,25 @@ describe("measurement flow", () => {
     expect(flow.step).toBe("result");
     expect(average(flow, "systolic")).toBe(125);
     expect(average(flow, "diastolic")).toBe(85);
+  });
+
+  it("uses configured durations, count and result selection", () => {
+    const config = {
+      restDurationSeconds: 120,
+      breakDurationSeconds: 30,
+      measurementCount: 2,
+      resultReadingNumbers: [1],
+    };
+    let flow = finishRest(startRest(createInitialFlow(config), 0));
+    expect(flow.timerEndsAt).toBeNull();
+    flow = acceptMeasurement(flow, { systolic: 120, diastolic: 80 });
+    const paused = startBreak(flow, 1_000);
+    expect(paused.timerEndsAt).toBe(31_000);
+    flow = acceptMeasurement(finishBreak(paused), { systolic: 140, diastolic: 90 });
+
+    expect(flow.step).toBe("result");
+    expect(average(flow, "systolic")).toBe(120);
+    expect(average(flow, "diastolic")).toBe(80);
   });
 
   it("accepts only whole numbers from 0 to 300", () => {

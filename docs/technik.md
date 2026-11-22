@@ -13,6 +13,8 @@ Die Anwendung stellt ein Web-App-Manifest mit `display: standalone` und eigenem 
 
 ## Zustände und Zeitmessung
 
+- Die Einstellungen umfassen eine Ruhephase von 1 bis 10 Minuten, Pausen von 30 Sekunden bis 10 Minuten in 30-Sekunden-Schritten, 1 bis 3 Messungen sowie eine Auswahl von mindestens einer vorhandenen Messung für die Ergebnisberechnung.
+- Die Einstellungen werden ausschließlich im Browser gespeichert und sind nur auf der Startansicht änderbar. Ein laufender Ablauf verwendet unverändert die beim Start geltende Konfiguration.
 - Die Anwendung unterscheidet Hinweise, Ruhephase, Messung, Pause und Ergebnis.
 - Während des Messablaufs werden die aktuelle Messungsnummer und die eingegebenen Werte im Arbeitsspeicher gehalten.
 - Die Ruhephase beginnt erst mit dem Start-Button. Eine Pause beginnt nach Übernahme der ersten beziehungsweise zweiten Messung.
@@ -26,7 +28,7 @@ Die Anwendung stellt ein Web-App-Manifest mit `display: standalone` und eigenem 
 
 - Für jede Messung sind systolischer und diastolischer Wert erforderlich. Eingaben müssen vor dem Weitergehen gültig sein.
 - Akzeptiert werden ganze Zahlen von 0 bis 300 mmHg. Diese technische Eingabeprüfung stellt keine medizinische Bewertung dar.
-- Der Mittelwert wird getrennt für systolischen und diastolischen Wert aus den Messungen 2 und 3 berechnet.
+- Der Mittelwert wird getrennt für systolischen und diastolischen Wert aus den in der Konfiguration ausgewählten Messungen berechnet.
 - Die Mittelwerte werden auf ganze mmHg gerundet und ohne zusätzliche medizinische Bewertung angezeigt.
 - Ein expliziter Neustart-Button setzt den Ablauf zurück.
 - Beim Neuladen oder Verlassen der Seite werden keine Messwerte gespeichert und nicht wiederhergestellt.
@@ -42,7 +44,7 @@ Die erste Version richtet sich an aktuelle Mobil- und Desktop-Browser. Die Anwen
 - Ruhe-Timer startet erst nach Betätigung und dauert fünf Minuten.
 - Die einminütigen Pausen starten nach den ersten beiden Messungen; ein Tabwechsel verfälscht den Timer nicht.
 - Unvollständige oder ungültige Eingaben verhindern das Weitergehen.
-- Genau drei Messungen führen zum Ergebnis; beide Mittelwerte verwenden nur Messungen 2 und 3.
+- Eine bis drei Messungen führen zum Ergebnis; beide Mittelwerte verwenden genau die zuvor ausgewählten Messungen.
 - Timer laufen auch nach Tabwechsel oder Gerätesperre anhand des Endzeitpunkts korrekt weiter und wechseln danach automatisch zum nächsten Schritt.
 - Tastaturbedienung, Fokusführung sowie verständliche Status- und Fehlermeldungen einschließlich Screenreader-Ansagen werden geprüft.
 - Die Anwendung registriert einen einfachen Service Worker, damit die bereits geladene Anwendung auch ohne Netzwerkverbindung geöffnet werden kann. Messwerte bleiben weiterhin ausschließlich im Arbeitsspeicher.

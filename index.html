@@ -12,9 +12,30 @@
     <link rel="apple-touch-icon" href="icons/icon-180.png" />
     <link rel="icon" href="icons/favicon-32.png?v=3" type="image/png" sizes="32x32" />
     <title>Blutdruckmessung</title>
+    <script>
+      if (location.hostname === "localhost"
+        || location.hostname === "127.0.0.1"
+        || location.hostname.endsWith(".app.github.dev")) {
+        navigator.serviceWorker?.getRegistrations()
+          .then((registrations) => Promise.all(
+            registrations
+              .filter((registration) => new URL(registration.scope).pathname.startsWith("/blutdruck/"))
+              .map((registration) => registration.unregister()),
+          ))
+          .then(() => caches.keys())
+          .then((keys) => Promise.all(
+            keys
+              .filter((key) => key.startsWith("blutdruck-app-"))
+              .map((key) => caches.delete(key)),
+          ))
+          .catch((error) => {
+            console.error("Alte Entwicklungs-Service-Worker konnten nicht entfernt werden.", error);
+          });
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/main.ts?v=4"></script>
   </body>
 </html>

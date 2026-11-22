@@ -1,4 +1,4 @@
-const CACHE_NAME = "blutdruck-app-v2";
+const CACHE_NAME = "blutdruck-app-v4";
 const APP_SHELL = [
   "./",
   "./index.html",

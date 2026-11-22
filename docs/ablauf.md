@@ -4,6 +4,8 @@ Die Anwendung begleitet die Messung mit einem vorhandenen Oberarm-Blutdruckmessg
 
 ## 1. Allgemeine Hinweise
 
+- Auf der Startseite können die erste Wartezeit, die Wartezeit zwischen Messungen, die Anzahl der Messungen und die für das Ergebnis verwendeten Messungen eingestellt werden.
+- Die Einstellungen werden im Browser gespeichert und gelten für den nächsten Ablauf. Während eines laufenden Ablaufs können sie nicht geändert werden.
 - In den 30 Minuten vor der Messung nichts essen.
 - Vor der Messung die Blase entleeren.
 - In den 30 Minuten vor der Messung auf Koffein, Rauchen und Sport verzichten.
@@ -11,7 +13,7 @@ Die Anwendung begleitet die Messung mit einem vorhandenen Oberarm-Blutdruckmessg
 
 ## 2. Ruhephase
 
-- Ein Start-Button startet einen Timer von fünf Minuten.
+- Ein Start-Button startet den konfigurierten Timer von einer bis zehn Minuten. Standardmäßig dauert die Ruhephase fünf Minuten.
 - Währenddessen ruhig sitzen, entspannen und die Manschette gemäß der Anleitung des Geräts am bloßen Oberarm anlegen.
 - Rücken abstützen, beide Füße auf den Boden stellen und Beine nicht überkreuzen.
 - Den Arm so abstützen, dass sich die Manschette etwa auf Herzhöhe befindet.
@@ -20,22 +22,22 @@ Die Anwendung begleitet die Messung mit einem vorhandenen Oberarm-Blutdruckmessg
 
 ## 3. Messung
 
-- Die Anwendung zeigt an, welche der drei Messungen ansteht, und fordert dazu auf, die Messung am Gerät zu starten.
+- Die Anwendung zeigt an, welche der ein bis drei konfigurierten Messungen ansteht, und fordert dazu auf, die Messung am Gerät zu starten.
 - Systolischer und diastolischer Wert werden manuell in mmHg eingegeben.
 - Es werden technisch ganze Zahlen von 0 bis 300 mmHg akzeptiert. Diese Prüfung ist keine medizinische Bewertung.
 - Ein Weiter-Button übernimmt die vollständigen, gültigen Eingaben.
-- Nach der ersten und zweiten Messung folgt die Pause, nach der dritten das Ergebnis.
+- Nach jeder Messung außer der letzten folgt die konfigurierte Pause, danach das Ergebnis.
 
 ## 4. Pause
 
-- Zwischen zwei Messungen startet automatisch ein Timer von einer Minute.
+- Zwischen zwei Messungen startet automatisch ein Timer von 30 Sekunden bis zehn Minuten. Die Auswahl erfolgt in 30-Sekunden-Schritten; standardmäßig dauert die Pause eine Minute.
 - Nach Ablauf der Pause wechselt die Anwendung automatisch zur nächsten Messung.
 - Die Hinweise zur ruhigen Sitzhaltung gelten weiterhin.
 
 ## 5. Ergebnis
 
-- Alle drei Messungen werden mit systolischem und diastolischem Wert angezeigt.
-- Zusätzlich wird für jeden der beiden Werte der Mittelwert aus Messung 2 und 3 angezeigt. Messung 1 geht nicht in diesen Mittelwert ein.
+- Alle durchgeführten Messungen werden mit systolischem und diastolischem Wert angezeigt.
+- Zusätzlich wird für jeden der beiden Werte der Mittelwert aus den vorher in den Einstellungen ausgewählten Messungen angezeigt.
 
 ## Medizinische Grundlage
 

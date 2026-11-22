@@ -36,9 +36,10 @@ Der Produktions-Build liegt anschließend im Verzeichnis `dist/`. Die GitHub-Act
 ## Geplanter Ablauf
 
 1. Allgemeine Hinweise zur Vorbereitung lesen.
-2. Eine fünfminütige Ruhephase starten und die Manschette anlegen.
-3. Drei Messungen durchführen und die Werte eingeben; zwischen den Messungen jeweils eine Minute pausieren.
-4. Alle Messwerte und den Durchschnitt der zweiten und dritten Messung ansehen.
+2. Auf der Startseite optional die Ruhezeit, Pausenzeit, Anzahl der Messungen und die für das Ergebnis verwendeten Messungen konfigurieren.
+3. Die Ruhephase starten und die Manschette anlegen. Standardmäßig dauert sie fünf Minuten.
+4. Eine bis drei Messungen durchführen und die Werte eingeben; zwischen den Messungen gilt die konfigurierte Pause. Standardmäßig dauert sie eine Minute.
+5. Alle Messwerte und den Durchschnitt der ausgewählten Messungen ansehen.
 
 ## Dokumentation
 
