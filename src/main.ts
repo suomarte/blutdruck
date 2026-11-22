@@ -85,6 +85,11 @@ function finishBreak(): void {
   announce(`Die Pause ist beendet. Jetzt steht Messung ${readingNumber} an.`);
 }
 
+function skipWaiting(): void {
+  if (step === "rest") finishRest();
+  else if (step === "break") finishBreak();
+}
+
 function reset(): void {
   window.clearInterval(timerId);
   timerId = undefined;
@@ -175,6 +180,7 @@ function renderTimer(title: string, text: string): string {
       <p>${text}</p>
       <div class="timer" aria-label="Verbleibende Zeit ${formatTime(seconds)}">${formatTime(seconds)}</div>
       <p class="timer-hint">Die Zeit läuft auch weiter, wenn dieser Tab nicht geöffnet ist.</p>
+      <button class="button button-quiet" data-action="skip-waiting" type="button">Wartephase überspringen</button>
     </section>
   `;
 }
@@ -251,6 +257,7 @@ function render(): void {
 
 function bindEvents(): void {
   document.querySelector<HTMLButtonElement>("[data-action='rest']")?.addEventListener("click", beginRest);
+  document.querySelector<HTMLButtonElement>("[data-action='skip-waiting']")?.addEventListener("click", skipWaiting);
   document.querySelector<HTMLButtonElement>("[data-action='reset']")?.addEventListener("click", () => {
     if (window.confirm("Möchten Sie den gesamten Ablauf wirklich neu starten?")) reset();
   });
