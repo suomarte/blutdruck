@@ -210,10 +210,10 @@ function renderMeasurement(): string {
       <form id="measurement-form" novalidate>
         <div class="field-grid">
           <label for="systolic">Systolisch <span>(mmHg)</span>
-            <input id="systolic" name="systolic" type="number" min="0" max="300" step="1" inputmode="numeric" required />
+            <input id="systolic" name="systolic" type="number" min="0" max="300" step="1" inputmode="numeric" placeholder="z. B. 120" required />
           </label>
           <label for="diastolic">Diastolisch <span>(mmHg)</span>
-            <input id="diastolic" name="diastolic" type="number" min="0" max="300" step="1" inputmode="numeric" required />
+            <input id="diastolic" name="diastolic" type="number" min="0" max="300" step="1" inputmode="numeric" placeholder="z. B. 80" required />
           </label>
         </div>
         ${errorMessage ? `<p class="error" role="alert">${errorMessage}</p>` : ""}
