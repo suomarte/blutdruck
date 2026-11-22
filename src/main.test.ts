@@ -72,3 +72,16 @@ it("saves settings before the next flow starts", async () => {
   expect(document.body.textContent).toContain("Mittelwert aus 1");
   expect(document.body.textContent).not.toContain("Mittelwert aus 2 und 3");
 });
+
+it("restores the current flow after reloading the tab", async () => {
+  await import("./main");
+
+  document.querySelector<HTMLButtonElement>("[data-action='rest']")!.click();
+  expect(document.querySelector("h2")?.textContent).toBe("Ruhephase");
+
+  vi.resetModules();
+  document.body.innerHTML = '<div id="app"></div>';
+  await import("./main");
+
+  expect(document.querySelector("h2")?.textContent).toBe("Ruhephase");
+});

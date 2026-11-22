@@ -16,6 +16,7 @@ import {
 
 const INSTALL_HINT_STORAGE_KEY = "blutdruck.install-hinweis-ausblenden";
 const CONFIG_STORAGE_KEY = "blutdruck.konfiguration";
+const FLOW_STORAGE_KEY = "blutdruck.messablauf";
 const app = document.querySelector<HTMLDivElement>("#app");
 
 if (!app) throw new Error("App-Container fehlt.");
@@ -63,6 +64,37 @@ function saveConfig(config: FlowConfig): void {
   window.localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(config));
 }
 
+function isValidFlow(flow: FlowState): boolean {
+  const validSteps = ["instructions", "rest", "measurement", "break", "result"];
+  return validSteps.includes(flow.step)
+    && isValidConfig(flow.config)
+    && flow.readings.length === flow.config.measurementCount
+    && flow.readings.every((reading) => reading === null
+      || (Number.isInteger(reading.systolic) && reading.systolic >= 0 && reading.systolic <= 300
+        && Number.isInteger(reading.diastolic) && reading.diastolic >= 0 && reading.diastolic <= 300))
+    && Number.isInteger(flow.readingNumber)
+    && flow.readingNumber >= 1
+    && flow.readingNumber <= flow.config.measurementCount
+    && (flow.timerEndsAt === null || Number.isFinite(flow.timerEndsAt));
+}
+
+function loadFlow(settings: FlowConfig): FlowState {
+  const stored = window.localStorage.getItem(FLOW_STORAGE_KEY);
+  if (!stored) return createInitialFlow(settings);
+
+  try {
+    const parsed = JSON.parse(stored) as FlowState;
+    return isValidFlow(parsed) ? parsed : createInitialFlow(settings);
+  } catch (error: unknown) {
+    console.error("Gespeicherter Messablauf konnte nicht gelesen werden.", error);
+    return createInitialFlow(settings);
+  }
+}
+
+function saveFlow(flow: FlowState): void {
+  window.localStorage.setItem(FLOW_STORAGE_KEY, JSON.stringify(flow));
+}
+
 function durationLabel(seconds: number): string {
   if (seconds < 60) return `${seconds} Sekunden`;
   const minutes = seconds / 60;
@@ -70,7 +102,7 @@ function durationLabel(seconds: number): string {
 }
 
 let settings = loadConfig();
-let flow: FlowState = createInitialFlow(settings);
+let flow: FlowState = loadFlow(settings);
 let timerId: number | undefined;
 let statusMessage = "";
 let errorMessage = "";
@@ -122,6 +154,7 @@ function startTimer(next: () => void): void {
 
 function beginRest(): void {
   flow = startRest(flow, Date.now());
+  saveFlow(flow);
   errorMessage = "";
   announce(`Die Ruhephase von ${durationLabel(flow.config.restDurationSeconds)} läuft.`);
   startTimer(() => {
@@ -131,6 +164,7 @@ function beginRest(): void {
 
 function finishRest(): void {
   flow = finishRestState(flow);
+  saveFlow(flow);
   window.clearInterval(timerId);
   timerId = undefined;
   announce("Die Ruhephase ist beendet. Jetzt steht Messung 1 an.");
@@ -138,6 +172,7 @@ function finishRest(): void {
 
 function beginBreak(): void {
   flow = startBreak(flow, Date.now());
+  saveFlow(flow);
   errorMessage = "";
   announce(`Pause von ${durationLabel(flow.config.breakDurationSeconds)}. Danach folgt Messung ${flow.readingNumber}.`);
   startTimer(() => {
@@ -147,6 +182,7 @@ function beginBreak(): void {
 
 function finishBreak(): void {
   flow = finishBreakState(flow);
+  saveFlow(flow);
   window.clearInterval(timerId);
   timerId = undefined;
   announce(`Die Pause ist beendet. Jetzt steht Messung ${flow.readingNumber} an.`);
@@ -161,6 +197,7 @@ function reset(): void {
   window.clearInterval(timerId);
   timerId = undefined;
   flow = createInitialFlow(settings);
+  saveFlow(flow);
   errorMessage = "";
   announce("Der Ablauf wurde zurückgesetzt.");
 }
@@ -227,6 +264,7 @@ function submitSettings(): void {
   settings = copyConfig(config);
   saveConfig(settings);
   flow = createInitialFlow(settings);
+  saveFlow(flow);
   settingsDraft = null;
   settingsError = "";
   showSettings = false;
@@ -249,6 +287,7 @@ function submitMeasurement(): void {
   }
 
   flow = acceptMeasurement(flow, { systolic, diastolic });
+  saveFlow(flow);
   errorMessage = "";
   if (flow.step === "break") {
     beginBreak();
@@ -471,6 +510,18 @@ document.addEventListener("visibilitychange", () => {
 });
 
 render();
+
+if (flow.step === "rest" || flow.step === "break") {
+  if (remainingSeconds(flow.timerEndsAt, Date.now()) <= 0) {
+    if (flow.step === "rest") finishRest();
+    else finishBreak();
+  } else {
+    startTimer(() => {
+      if (flow.step === "rest") finishRest();
+      else if (flow.step === "break") finishBreak();
+    });
+  }
+}
 
 if ("serviceWorker" in navigator) {
   if (import.meta.env.PROD) {
