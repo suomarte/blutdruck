@@ -112,7 +112,7 @@ function submitMeasurement(): void {
   const systolic = valueFrom("systolic");
   const diastolic = valueFrom("diastolic");
   if (systolic === null || diastolic === null) {
-    errorMessage = "Bitte geben Sie für beide Werte ganze Zahlen von 0 bis 300 mmHg ein.";
+    errorMessage = "Bitte gib für beide Werte ganze Zahlen von 0 bis 300 mmHg ein.";
     render();
     document.querySelector<HTMLInputElement>("#systolic")?.focus();
     return;
@@ -148,18 +148,17 @@ function layout(content: string): string {
 function renderInstructions(): string {
   return `
     <section class="intro">
-      <p class="step-label">Vorbereitung</p>
-      <h2>In Ruhe und drei Mal messen</h2>
-      <p>Diese Anwendung begleitet Sie bei drei manuellen Messungen mit Ihrem Oberarm-Blutdruckmessgerät. Sie stellt keine Diagnose und ersetzt keine ärztliche Beratung.</p>
+      <h2>Vorbereitung für die Blutdruckmessung</h2>
+      <p>Diese Anwendung begleitet dich bei drei manuellen Messungen mit deinem Oberarm-Blutdruckmessgerät. Die Anwendung stellt keine Diagnose und ersetzt keine ärztliche Beratung.</p>
+      <button class="button button-primary" data-action="rest">Ruhephase vorbereiten</button>
       <div class="notice">
         <h3>Bitte vorher beachten</h3>
         <ul>
           <li>In den letzten 30 Minuten nichts essen und auf Koffein, Rauchen und Sport verzichten.</li>
           <li>Vorher die Blase entleeren.</li>
-          <li>Beachten Sie zusätzlich die Anleitung Ihres Messgeräts.</li>
+          <li>Beachte zusätzlich die Anleitung deines Messgeräts.</li>
         </ul>
       </div>
-      <button class="button button-primary" data-action="rest">Ruhephase vorbereiten</button>
     </section>
   `;
 }
@@ -168,7 +167,6 @@ function renderTimer(title: string, text: string): string {
   const seconds = remainingSeconds();
   return `
     <section class="panel timer-panel">
-      <p class="step-label">Ablauf</p>
       <h2>${title}</h2>
       <p>${text}</p>
       <div class="timer" aria-label="Verbleibende Zeit ${formatTime(seconds)}">${formatTime(seconds)}</div>
@@ -181,14 +179,14 @@ function renderTimer(title: string, text: string): string {
 function renderRest(): string {
   return renderTimer(
     "Ruhephase",
-    "Sitzen Sie ruhig, stützen Sie den Rücken ab und stellen Sie beide Füße auf den Boden. Legen Sie die Manschette am bloßen Oberarm an und stützen Sie den Arm auf Herzhöhe ab."
+    "Setz dich ruhig hin, lehn dich an und stell beide Füße auf den Boden. Kreuze deine Beine nicht. Leg die Manschette am bloßen Oberarm an und stütz den Arm auf Herzhöhe ab."
   );
 }
 
 function renderBreak(): string {
   return renderTimer(
     "Kurze Pause",
-    "Bleiben Sie ruhig sitzen und sprechen Sie nicht. Nach Ablauf der Pause können Sie die nächste Messung am Gerät starten."
+    "Bleib ruhig sitzen und sprich nicht. Nach Ablauf der Pause kannst du die nächste Messung am Gerät starten."
   );
 }
 
@@ -196,9 +194,8 @@ function renderMeasurement(): string {
   const previous = readings[readingNumber - 2];
   return `
     <section class="panel">
-      <p class="step-label">Messung ${readingNumber} von 3</p>
-      <h2>Messen Sie jetzt am Gerät</h2>
-      <p>Starten Sie die Messung an Ihrem Gerät. Geben Sie anschließend die angezeigten Werte ein. Während der Messung bitte nicht sprechen.</p>
+      <h2>Messen ${readingNumber} von 3</h2>
+      <p>Starte die Messung an deinem Gerät. Gib anschließend die angezeigten Werte ein. Während der Messung bitte nicht sprechen.</p>
       ${previous ? `<p class="muted">Die vorherige Messung wurde übernommen.</p>` : ""}
       <form id="measurement-form" novalidate>
         <div class="field-grid">
@@ -222,9 +219,8 @@ function renderResult(): string {
   `).join("");
   return `
     <section class="panel">
-      <p class="step-label">Ergebnis</p>
-      <h2>Ihre drei Messungen</h2>
-      <p>Hier sehen Sie die eingegebenen Werte. Der Mittelwert berücksichtigt nur die zweite und dritte Messung.</p>
+      <h2>Ergebnis</h2>
+      <p>Hier siehst du die eingegebenen Werte. Der Mittelwert berücksichtigt nur die zweite und dritte Messung.</p>
       <div class="table-wrap">
         <table>
           <caption class="sr-only">Blutdruckwerte und Mittelwert</caption>
@@ -233,7 +229,7 @@ function renderResult(): string {
           <tfoot><tr><th scope="row">Mittelwert aus 2 und 3</th><td>${average("systolic")} mmHg</td><td>${average("diastolic")} mmHg</td></tr></tfoot>
         </table>
       </div>
-      <p class="muted">Die Werte werden nicht medizinisch bewertet. Besprechen Sie Fragen oder Auffälligkeiten mit Ihrer Ärztin oder Ihrem Arzt.</p>
+      <p class="muted">Die Werte werden nicht medizinisch bewertet. Besprich Fragen oder Auffälligkeiten mit deiner Ärztin oder deinem Arzt.</p>
     </section>
   `;
 }
@@ -251,9 +247,7 @@ function render(): void {
 function bindEvents(): void {
   document.querySelector<HTMLButtonElement>("[data-action='rest']")?.addEventListener("click", beginRest);
   document.querySelector<HTMLButtonElement>("[data-action='skip-waiting']")?.addEventListener("click", skipWaiting);
-  document.querySelector<HTMLButtonElement>("[data-action='reset']")?.addEventListener("click", () => {
-    if (window.confirm("Möchten Sie den gesamten Ablauf wirklich neu starten?")) reset();
-  });
+  document.querySelector<HTMLButtonElement>("[data-action='reset']")?.addEventListener("click", reset);
   document.querySelector<HTMLFormElement>("#measurement-form")?.addEventListener("submit", (event) => {
     event.preventDefault();
     submitMeasurement();
