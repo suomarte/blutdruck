@@ -5,6 +5,7 @@
 Die Anwendung ist als reine Frontend-Anwendung mit Vite und TypeScript umgesetzt, ohne zusätzliche UI-Bibliothek oder Backend. Ein vorhandenes Blutdruckmessgerät wird nicht angebunden; Messwerte werden manuell erfasst. Der Produktions-Build wird über GitHub Actions auf GitHub Pages veröffentlicht.
 
 Der geplante Ablauf ist in [ablauf.md](ablauf.md) beschrieben. Der Anwendungscode liegt unter `src/`.
+Die Ablauflogik liegt unabhängig von der DOM-Darstellung in `src/measurement-flow.ts` und wird automatisiert getestet.
 
 ## Home-Bildschirm und App-Icon
 
@@ -27,8 +28,10 @@ Die Anwendung stellt ein Web-App-Manifest mit `display: standalone` und eigenem 
 - Akzeptiert werden ganze Zahlen von 0 bis 300 mmHg. Diese technische Eingabeprüfung stellt keine medizinische Bewertung dar.
 - Der Mittelwert wird getrennt für systolischen und diastolischen Wert aus den Messungen 2 und 3 berechnet.
 - Die Mittelwerte werden auf ganze mmHg gerundet und ohne zusätzliche medizinische Bewertung angezeigt.
-- Ein expliziter Neustart-Button setzt den Ablauf nach einer Bestätigung zurück.
+- Ein expliziter Neustart-Button setzt den Ablauf zurück.
 - Beim Neuladen oder Verlassen der Seite werden keine Messwerte gespeichert und nicht wiederhergestellt.
+- Wartephasen können bewusst über den Button „Wartephase überspringen“ verkürzt werden.
+- „Neu starten“ setzt den Ablauf bewusst ohne zusätzliche Bestätigung zurück.
 
 ## Bedienbarkeit
 
@@ -42,5 +45,6 @@ Die erste Version richtet sich an aktuelle Mobil- und Desktop-Browser. Die Anwen
 - Genau drei Messungen führen zum Ergebnis; beide Mittelwerte verwenden nur Messungen 2 und 3.
 - Timer laufen auch nach Tabwechsel oder Gerätesperre anhand des Endzeitpunkts korrekt weiter und wechseln danach automatisch zum nächsten Schritt.
 - Tastaturbedienung, Fokusführung sowie verständliche Status- und Fehlermeldungen einschließlich Screenreader-Ansagen werden geprüft.
+- Die Anwendung registriert einen einfachen Service Worker, damit die bereits geladene Anwendung auch ohne Netzwerkverbindung geöffnet werden kann. Messwerte bleiben weiterhin ausschließlich im Arbeitsspeicher.
 
 Der Produktions-Build wird mit `npm run build` erstellt. Der automatische Deploy ist in `.github/workflows/deploy-pages.yml` definiert und läuft bei Pushes auf `main`.

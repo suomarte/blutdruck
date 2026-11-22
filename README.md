@@ -25,6 +25,12 @@ Für einen Produktions-Build:
 npm run build
 ```
 
+Für die automatisierten Ablauftests:
+
+```bash
+npm test
+```
+
 Der Produktions-Build liegt anschließend im Verzeichnis `dist/`. Die GitHub-Actions-Konfiguration für den automatischen Pages-Deploy befindet sich unter `.github/workflows/deploy-pages.yml`.
 
 ## Geplanter Ablauf

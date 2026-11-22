@@ -1,20 +1,24 @@
 import "./style.css";
+import {
+  acceptMeasurement,
+  average,
+  createInitialFlow,
+  finishBreak as finishBreakState,
+  finishRest as finishRestState,
+  remainingSeconds,
+  parseReadingValue,
+  startBreak,
+  startRest,
+  type FlowState,
+} from "./measurement-flow";
 
-type Step = "instructions" | "rest" | "measurement" | "break" | "result";
-type Reading = { systolic: number; diastolic: number };
-
-const REST_DURATION = 5 * 60;
-const BREAK_DURATION = 60;
 const INSTALL_HINT_STORAGE_KEY = "blutdruck.install-hinweis-ausblenden";
 const app = document.querySelector<HTMLDivElement>("#app");
 
 if (!app) throw new Error("App-Container fehlt.");
 const root = app;
 
-let step: Step = "instructions";
-let readingNumber = 1;
-let readings: Array<Reading | null> = [null, null, null];
-let timerEndsAt: number | null = null;
+let flow: FlowState = createInitialFlow();
 let timerId: number | undefined;
 let statusMessage = "";
 let errorMessage = "";
@@ -26,14 +30,9 @@ function formatTime(seconds: number): string {
   return `${minutes}:${String(remainder).padStart(2, "0")}`;
 }
 
-function remainingSeconds(): number {
-  if (timerEndsAt === null) return 0;
-  return Math.max(0, Math.ceil((timerEndsAt - Date.now()) / 1000));
-}
-
 function announce(message: string): void {
   statusMessage = message;
-  render();
+  render(true);
 }
 
 function isStandalone(): boolean {
@@ -52,14 +51,12 @@ function hideInstallHint(): void {
   render();
 }
 
-function startTimer(duration: number, next: () => void): void {
-  timerEndsAt = Date.now() + duration * 1000;
+function startTimer(next: () => void): void {
   window.clearInterval(timerId);
   timerId = window.setInterval(() => {
-    if (remainingSeconds() <= 0) {
+    if (remainingSeconds(flow.timerEndsAt, Date.now()) <= 0) {
       window.clearInterval(timerId);
       timerId = undefined;
-      timerEndsAt = null;
       next();
       return;
     }
@@ -69,61 +66,53 @@ function startTimer(duration: number, next: () => void): void {
 }
 
 function beginRest(): void {
-  step = "rest";
+  flow = startRest(flow, Date.now());
   errorMessage = "";
   announce("Die Ruhephase von fünf Minuten läuft.");
-  startTimer(REST_DURATION, () => {
+  startTimer(() => {
     finishRest();
   });
 }
 
 function finishRest(): void {
-  step = "measurement";
-  readingNumber = 1;
-  timerEndsAt = null;
+  flow = finishRestState(flow);
   window.clearInterval(timerId);
   timerId = undefined;
   announce("Die Ruhephase ist beendet. Jetzt steht Messung 1 an.");
 }
 
 function beginBreak(): void {
-  step = "break";
+  flow = startBreak(flow, Date.now());
   errorMessage = "";
-  announce(`Pause von einer Minute. Danach folgt Messung ${readingNumber}.`);
-  startTimer(BREAK_DURATION, () => {
+  announce(`Pause von einer Minute. Danach folgt Messung ${flow.readingNumber}.`);
+  startTimer(() => {
     finishBreak();
   });
 }
 
 function finishBreak(): void {
-  step = "measurement";
-  timerEndsAt = null;
+  flow = finishBreakState(flow);
   window.clearInterval(timerId);
   timerId = undefined;
-  announce(`Die Pause ist beendet. Jetzt steht Messung ${readingNumber} an.`);
+  announce(`Die Pause ist beendet. Jetzt steht Messung ${flow.readingNumber} an.`);
 }
 
 function skipWaiting(): void {
-  if (step === "rest") finishRest();
-  else if (step === "break") finishBreak();
+  if (flow.step === "rest") finishRest();
+  else if (flow.step === "break") finishBreak();
 }
 
 function reset(): void {
   window.clearInterval(timerId);
   timerId = undefined;
-  step = "instructions";
-  readingNumber = 1;
-  readings = [null, null, null];
-  timerEndsAt = null;
+  flow = createInitialFlow();
   errorMessage = "";
   announce("Der Ablauf wurde zurückgesetzt.");
 }
 
 function valueFrom(id: string): number | null {
   const input = document.querySelector<HTMLInputElement>(`#${id}`);
-  if (!input || input.value.trim() === "") return null;
-  const value = Number(input.value);
-  return Number.isInteger(value) && value >= 0 && value <= 300 ? value : null;
+  return input ? parseReadingValue(input.value) : null;
 }
 
 function submitMeasurement(): void {
@@ -136,21 +125,13 @@ function submitMeasurement(): void {
     return;
   }
 
-  readings[readingNumber - 1] = { systolic, diastolic };
+  flow = acceptMeasurement(flow, { systolic, diastolic });
   errorMessage = "";
-  if (readingNumber < 3) {
-    readingNumber += 1;
+  if (flow.step === "break") {
     beginBreak();
   } else {
-    step = "result";
     announce("Alle drei Messungen sind erfasst. Das Ergebnis wird angezeigt.");
   }
-}
-
-function average(key: keyof Reading): number {
-  const second = readings[1]?.[key] ?? 0;
-  const third = readings[2]?.[key] ?? 0;
-  return Math.round((second + third) / 2);
 }
 
 function layout(content: string): string {
@@ -162,7 +143,8 @@ function layout(content: string): string {
       </a>
     </header>
     <main id="main-content" tabindex="-1">
-      ${step !== "instructions" ? '<div class="page-actions"><button class="button button-quiet" data-action="reset">Neu starten</button></div>' : ""}
+      <h1 class="sr-only">Blutdruckmessung</h1>
+      ${flow.step !== "instructions" ? '<div class="page-actions"><button class="button button-quiet" data-action="reset">Neu starten</button></div>' : ""}
       ${content}
     </main>
     <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">${statusMessage}</div>
@@ -198,12 +180,12 @@ function renderInstructions(): string {
 }
 
 function renderTimer(title: string, text: string): string {
-  const seconds = remainingSeconds();
+  const seconds = remainingSeconds(flow.timerEndsAt, Date.now());
   return `
     <section class="panel timer-panel">
       <h2>${title}</h2>
       <p>${text}</p>
-      <div class="timer" aria-label="Verbleibende Zeit ${formatTime(seconds)}">${formatTime(seconds)}</div>
+      <div class="timer" role="timer" aria-live="off" aria-label="Verbleibende Zeit ${formatTime(seconds)}">${formatTime(seconds)}</div>
       <p class="timer-hint">Die Zeit läuft auch weiter, wenn dieser Tab nicht geöffnet ist.</p>
       <button class="button button-quiet" data-action="skip-waiting" type="button">Wartephase überspringen</button>
     </section>
@@ -225,10 +207,10 @@ function renderBreak(): string {
 }
 
 function renderMeasurement(): string {
-  const previous = readings[readingNumber - 2];
+  const previous = flow.readings[flow.readingNumber - 2];
   return `
     <section class="panel">
-      <h2>Messen ${readingNumber} von 3</h2>
+      <h2>Messen ${flow.readingNumber} von 3</h2>
       <p>Starte die Messung an deinem Gerät. Gib anschließend die angezeigten Werte ein. Während der Messung bitte nicht sprechen.</p>
       ${previous ? `<p class="muted">Die vorherige Messung wurde übernommen.</p>` : ""}
       <form id="measurement-form" novalidate>
@@ -248,7 +230,7 @@ function renderMeasurement(): string {
 }
 
 function renderResult(): string {
-  const rows = readings.map((reading, index) => `
+  const rows = flow.readings.map((reading, index) => `
     <tr><th scope="row">Messung ${index + 1}</th><td>${reading?.systolic} mmHg</td><td>${reading?.diastolic} mmHg</td></tr>
   `).join("");
   return `
@@ -260,7 +242,7 @@ function renderResult(): string {
           <caption class="sr-only">Blutdruckwerte und Mittelwert</caption>
           <thead><tr><th scope="col">Messung</th><th scope="col">Systolisch</th><th scope="col">Diastolisch</th></tr></thead>
           <tbody>${rows}</tbody>
-          <tfoot><tr><th scope="row">Mittelwert aus 2 und 3</th><td>${average("systolic")} mmHg</td><td>${average("diastolic")} mmHg</td></tr></tfoot>
+          <tfoot><tr><th scope="row">Mittelwert aus 2 und 3</th><td>${average(flow, "systolic")} mmHg</td><td>${average(flow, "diastolic")} mmHg</td></tr></tfoot>
         </table>
       </div>
       <p class="muted">Die Werte werden nicht medizinisch bewertet. Besprich Fragen oder Auffälligkeiten mit deiner Ärztin oder deinem Arzt.</p>
@@ -268,14 +250,17 @@ function renderResult(): string {
   `;
 }
 
-function render(): void {
-  const content = step === "instructions" ? renderInstructions()
-    : step === "rest" ? renderRest()
-      : step === "break" ? renderBreak()
-        : step === "measurement" ? renderMeasurement()
+function render(focusMain = false): void {
+  const content = flow.step === "instructions" ? renderInstructions()
+    : flow.step === "rest" ? renderRest()
+      : flow.step === "break" ? renderBreak()
+        : flow.step === "measurement" ? renderMeasurement()
           : renderResult();
   root.innerHTML = layout(content);
   bindEvents();
+  if (focusMain && flow.step !== "measurement") {
+    document.querySelector<HTMLElement>("#main-content")?.focus();
+  }
 }
 
 function bindEvents(): void {
@@ -287,14 +272,24 @@ function bindEvents(): void {
     event.preventDefault();
     submitMeasurement();
   });
-  if (step === "measurement") document.querySelector<HTMLInputElement>("#systolic")?.focus();
+  if (flow.step === "measurement") document.querySelector<HTMLInputElement>("#systolic")?.focus();
 }
 
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible" && timerEndsAt !== null && remainingSeconds() <= 0) {
-    if (step === "rest") finishRest();
-    else if (step === "break") finishBreak();
+  if (document.visibilityState === "visible" && flow.timerEndsAt !== null && remainingSeconds(flow.timerEndsAt, Date.now()) <= 0) {
+    if (flow.step === "rest") finishRest();
+    else if (flow.step === "break") finishBreak();
   }
 });
 
 render();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then((registration) => registration.update())
+      .catch((error: unknown) => {
+        console.error("Offline-Unterstützung konnte nicht aktiviert werden.", error);
+      });
+  });
+}

@@ -15,4 +15,4 @@ Dieses Projekt plant eine rein clientseitige Anwendung zur Unterstützung von dr
 
 ## Aktueller Stand
 
-Das Projekt enthält zunächst nur Planung und Dokumentation. Einrichtungs-, Build- und Testbefehle werden erst dokumentiert, wenn die zugehörigen Werkzeuge tatsächlich eingerichtet sind.
+Die Anwendung ist als ausführbare Vite-/TypeScript-Frontend-Anwendung umgesetzt. Sie wird mit `npm run dev` entwickelt, mit `npm run build` gebaut und mit `npm test` geprüft. Der Produktions-Build wird über GitHub Pages veröffentlicht.
